@@ -125,3 +125,4 @@ os.system("rm /../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp2.txt")
 os.system("cooler cload pairs -c1 1 -p1 2 -c2 3 -p2 4 --zero-based --chunksize 10000000 --field count=5:dtype=float32 chrmm9.size:1000000 /../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/pairfile.txt segr1mb_chr19_mm9.cool")
 os.system("cooler balance 1mb_mm9_woSc.cool")
 os.system("cooler zoomify --balance 1mb_mm9_woSc.cool")
+
