@@ -6,16 +6,40 @@ from itertools import combinations
 import fileinput
 import os
 import sys
+import os.path
 
+for i in range (1,5):
+    file_name = input ("enter the file location and name of the csv file:\n")
+    if os.path.isfile(file_name):
+        print ('your file name is: %s' %file_name)
+        break
+    else :
+        print ("folder not found!! enter the folder name of the csv file again:\n  ")
+        if i == 4:
+            print('iteration exceeded!!! ')
+            
+for i in range (1,5):  
+    size = input('enter the chrom size file name -.../...size-:\n')
+    if os.path.isfile(file_name):
+        print ('your size file name is: %s' %size)
+        break
+    else :
+        print ("folder not found!! enter the chrom size file again:\n  ")
+        if i == 4:
+            print('iteration exceeded!!! ')
+            
+limit = int(input('enter the filtering limit:\n'))
+print ("enter the name for the output file:\n")
+out_name = str(input())
 
-os.system("rm /../../n/scratch2/onur/APRIL/week1/coverage_cis_only.txt")
-cvrtbl = pd.read_csv("/../../n/scratch2/onur/APRIL/week1/coveragetable.csv")  ##location of the segregation file .csv format
-cvrtbl2 = pd.read_csv("/../../n/scratch2/onur/APRIL/week1/coveragetable.csv" , header= None , low_memory=False)
+os.system("rm %s_pair.txt" %out_name)
+cvrtbl = pd.read_csv("%s" %(file_name))  ##location of the segregation file .csv format
+cvrtbl2 = pd.read_csv("%s" %(file_name) , header= None , low_memory=False)
 cvrtbl2 = cvrtbl2.drop ([2], axis = 1) ##remove stop column
 
 q = len (cvrtbl2.columns) ##column length
 p = len (cvrtbl)          ##row length
-myx =open("/../../n/scratch2/onur/APRIL/week1/coverage_cis_only" , "a")
+myx =open("%s_pair.txt" %out_name , "a")
 
 for i in range (3,q+1):
     g = cvrtbl.iloc[:,[0,1,i]]
@@ -42,7 +66,6 @@ for i in range (3,q+1):
 myx.close()
 
 
-os.system("cooler cload pairs -c1 1 -p1 2 -c2 3 -p2 4 --zero-based --chunksize 10000000 --field count=5:dtype=float32 mm10.size:25000 /../../n/scratch2/onur/APRIL/week1/coverage_cis_only.txt /../../n/scratch2/onur/APRIL/week1/17542_overage_cis_only.cool")
-os.system("cp /../../n/scratch2/onur/APRIL/week1/overage_cis_only.cool /../../n/scratch2/onur/APRIL/week1/unbalanced/")
-os.system("cooler balance --cis-only /../../n/scratch2/onur/APRIL/week1/overage_cis_only.cool")
-os.system("cooler zoomify --balance /../../n/scratch2/onur/APRIL/week1/overage_cis_only.cool -o /../../n/scratch2/onur/APRIL/week1/overage_cis_only.mcool")
+os.system("cooler cload pairs -c1 1 -p1 2 -c2 3 -p2 4 --zero-based --chunksize 10000000 --field count=5:dtype=float32 %s:50000 %s_pair.txt %s.cool" %(size, out_name,out_name))
+os.system("cooler balance --cis-only %s.cool" %out_name)
+os.system("cooler zoomify --balance %s.cool -o %s.mcool" %(out_name,out_name) )
