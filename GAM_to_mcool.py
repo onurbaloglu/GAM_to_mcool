@@ -6,28 +6,49 @@ from itertools import combinations
 import fileinput
 import os
 import sys
+import os.path
+
+
+for i in range (1,5):
+    file_name = input ("enter the file location and name of the csv file:\n")
+    if os.path.isfile(file_name):
+        print ('your file name is: %s' %file_name)
+        break
+    else :
+        print ("folder not found!! enter the folder name of the csv file again:\n  ")
+        if i == 4:
+            print('iteration exceeded!!! ')
+            
+for i in range (1,5):  
+    size = input('enter the chrom size file name -.../...size-:\n')
+    if os.path.isfile(file_name):
+        print ('your size file name is: %s' %size)
+        break
+    else :
+        print ("folder not found!! enter the chrom size file again:\n  ")
+        if i == 4:
+            print('iteration exceeded!!! ')
+            
+
+print ("enter the name for the output file:\n")
+out_name = str(input())
 
 ##FIRST DELETE TEMP FILES TO AVOID CONFLICT
-os.system("rm /../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp1.csv")
-os.system("rm /../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp2.txt")
-os.system("rm /../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/pairfile.txt")
+os.system("rm temp1.csv")
+os.system("rm temp2.txt")
+os.system("rm %s_pair.txt" %out_name)
 
 #HERE READ THE SEGREGATION FILE AND DROP STOP CODON
-cvrtbl = pd.read_csv("segr1mb_chr19_mm9.csv")  ##location of the segregation file .csv format **make auto
+cvrtbl = pd.read_csv("%s" %file_name)  ##location of the segregation file .csv format
 #for header
-cvrtbl2 = pd.read_csv("segr1mb_chr19_mm9.csv" , header= None , low_memory=False) **make auto
-
-
-
+cvrtbl2 = pd.read_csv("%s" %file_name , header= None , low_memory=False)
+##location of the segregation file .csv format
 colendcol = cvrtbl.iloc[[0],[0,1,2]]
 colendcol.columns.values[2] = "X"
 cvrtbl2 = cvrtbl2.drop ([2], axis = 1) ##remove stop column
-
 q = len (cvrtbl2.columns) ##column length
 p = len (cvrtbl)          ##row length
 
-##NOW I HAVE CVR TABLE WITHOUT STOP CODON AND ROW AND COLUMN LENGTHS
-##chrom + start = chrom_start column
 
 for i in range (0,p+1):
     a = cvrtbl2.iloc[i,0] 
@@ -40,14 +61,14 @@ for i in range (0,p+1):
 #print (t)
 
 mycvr = pd.DataFrame(t)
-mycvr.to_csv('/../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp1.csv' , index=False, header=False) ##here change this to not writing to a file
+mycvr.to_csv('temp1.csv' , index=False, header=False)  ##BUNUN YERINE MEMOYA ALIP DEVAM ETTIREBILIRIZ
 
 NPnames = mycvr.iloc [[0],2:q]
 
 
 ##NOW I HAVE TEMP1 FILE contains like chr1:10000 columns
 
-mid = pd.read_csv("/../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp1.csv")
+mid = pd.read_csv("temp1.csv")
 
 colendcol = mid.iloc[[0],[0,1,2]]
 colendcol.columns.values[2] = "X"
@@ -74,7 +95,7 @@ for i in range (2,q):
 cvrtospr = result.loc[result.X ==1]
 
   
-myx =open("/../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp2.txt" , "a") ## SPRITE like file 
+myx =open("temp2.txt" , "a") ## SPRITE like file 
 l = len (cvrtospr)
 
 for i in range (0,l-1):
@@ -91,12 +112,16 @@ myx.close()
 
 ##MOW I HAVE temp2.txt FILE. NEXT STEP IS CONVERT THIS FILE TO PAIR FILE.
 
-os.system("/../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/rm temp1.csv")
+os.system("rm temp1.csv")
+
+print ("SPRITE IS CREATED")
 
 ##then we convert SPRITE to PAIR file to make it ready to cool
 
-myx =open("/../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/pairfile.txt" , "a")  ##PAIR FILE
-filepath = "/../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp2.txt"  
+myx =open("%s_pair.txt" %out_name , "a")  ##PAIR FILE
+
+
+filepath = "temp2.txt"  
 with open(filepath) as fp:  
    line = fp.readline()
    cnt = 1
@@ -104,7 +129,7 @@ with open(filepath) as fp:
        coords = [coord for coord in line.strip().split("\t")] 
        pairs = (combinations(coords, 2))
        line = fp.readline()
-       score = 1.0 #/ len(coords)
+       score = 1.0 / len(coords)
 
        for a, b in pairs:
             a = a.replace(':', "\t")
@@ -120,9 +145,13 @@ with open(filepath) as fp:
 
 myx.close()
 
+
+
 ##converting the results to mcool
-os.system("rm /../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/temp2.txt")
-os.system("cooler cload pairs -c1 1 -p1 2 -c2 3 -p2 4 --zero-based --chunksize 10000000 --field count=5:dtype=float32 chrmm9.size:1000000 /../../n/scratch2/onur/MARCH/GEO1mbmm9/MARCH7/temp/pairfile.txt segr1mb_chr19_mm9.cool")
-os.system("cooler balance 1mb_mm9_woSc.cool")
-os.system("cooler zoomify --balance 1mb_mm9_woSc.cool")
+print ("PAIR FILE IS CREATED!!!")
+os.system("rm temp2.txt")
+os.system("cooler cload pairs -c1 1 -p1 2 -c2 3 -p2 4 --zero-based --chunksize 10000000 --field count=5:dtype=float32 %s:50000 %s_pair.txt %s.cool" %(size,out_name , out_name))
+os.system("cooler balance %s.cool" %out_name)
+os.system("cooler zoomify %s.cool" %out_name)
+
 
