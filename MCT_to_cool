@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import re
 x =[]
-with open('files/outputs/deneme_func_cis.csv', 'r' ) as d:
+with open('MCT_INPUT', 'r' ) as d:
         keeper = "00"  
         for row in csv.reader(d ,dialect="excel-tab"):
             if row[0] != keeper: #if want to select just one sample remove two lines and set keeper to questioned sample
@@ -30,4 +30,4 @@ EOF
    | cooler cload pairs \
         -c1 1 -p1 2 -c2 3 -p2 4 \
         --zero-based --chunksize 10000000 --field count=5:dtype=float32 \
-        mm10.size:25000 - "files/outputs/deneme.woTAB_cis.cool"
+        CHROMSIZE:25000 - "OUTPUT.cool"
