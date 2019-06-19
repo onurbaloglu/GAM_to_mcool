@@ -1,0 +1,29 @@
+#!/bin/bash
+INPUT =files/pairexample.txt
+CHROMSIZES=mm10.size
+OPREFIX=files/outputs/deneme.frompair0619
+
+zcat   $INPUT \
+    | python <(cat <<EOF
+from itertools import combinations
+import fileinput
+import csv
+import pandas as pd
+import numpy as np
+import re
+x =[]
+
+for line in fileinput.input():
+    
+    coords = [coord.replace('\t', '\t') for coord in line.strip().split('\t')]    
+    pairs = list(combinations(coords, 2))
+
+    print(coords, sep='\t')
+
+
+EOF
+)  \
+   | cooler cload pairs \
+        -c1 1 -p1 2 -c2 3 -p2 4 \
+        --zero-based --chunksize 10000000 --field count=5:dtype=float32 \
+        $CHROMSIZES:25000 - "${OPREFIX}.cool"
