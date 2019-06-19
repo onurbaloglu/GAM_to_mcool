@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import re
 x =[]
-with open('MCT_INPUT', 'r' ) as d:
+with open('MCT_INPUT.csv', 'r' ) as d:
         keeper = "00"  
         for row in csv.reader(d ,dialect="excel-tab"):
             if row[0] != keeper: #if want to select just one sample remove two lines and set keeper to questioned sample
