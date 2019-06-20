@@ -11,8 +11,8 @@ import pandas as pd
 import numpy as np
 import re
 x =[]
-with open('$3', 'r' ) as d: ##need to enter MCT file address
-        keeper = "00"
+with open('$3', 'r' ) as d: ##need to write MCT file address as $3
+        keeper = "keeper"
         for row in csv.reader(d ,dialect="excel-tab"):
             if row[0] != keeper:
                 keeper = row[0]
