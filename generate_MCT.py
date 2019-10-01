@@ -6,15 +6,19 @@ For using coverage table : Gamtool process_nps produce ".table" file and coverag
 so need to be seperated like segregation file (names not to be specific as original NPs but each column need to 
 have different first row)
 
-
 After reading segregation/coverage file for data; MCT is created. Segr/cov file is read for each NP. 
 NPs are located at columns that is each column in segr/cov table is belong to an NP. 
 Each row is for chromosome location with chromosome start and stop coordinates.
 this binned location is taken and convert to MCT format --we use ':' instead of '\t' for size and 
 next MCT to cool code--. Each row in MCT file has a format like "4DNFI11KCHDF.rmdup.bam	chr1:12050000:chr1:12075000:1". 
 That is "NP name  chr_name:start:chr_name:stop". Finally MCT file is sorted by NP_names.
-
     """
+    """
+input_file: segregation or coverage file from gamtool process_nps. Need to be tab seperated .csv file
+output_sorted: name of the output file which is sorted according to NPs.
+threshold_value: Minimum value for difference of bin locations for generating MCT file.
+    """
+    
     import csv
     import fileinput
     import os
